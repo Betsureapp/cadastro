@@ -37,70 +37,9 @@
   margin: 0;
 }
 
-/* Progress */
-.progress {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-2);
-  margin-bottom: var(--space-8);
-  flex-wrap: wrap;
-}
-
-.progressStep {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-1);
-  opacity: 0.5;
-  transition: all var(--transition-fast);
-}
-
-.progressStep.active {
-  opacity: 1;
-}
-
-.progressStep.completed {
-  opacity: 0.8;
-}
-
-.progressIcon {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-full);
-  background: var(--color-surface);
-  border: 2px solid var(--color-border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-text-muted);
-  transition: all var(--transition-fast);
-}
-
-.progressStep.active .progressIcon {
-  border-color: var(--color-accent);
-  background: var(--color-accent);
-  color: #000;
-}
-
-.progressStep.completed .progressIcon {
-  border-color: var(--color-success);
-  background: var(--color-success);
-  color: white;
-}
-
-.progressLabel {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
-  font-weight: 500;
-}
-
-.progressStep.active .progressLabel {
-  color: var(--color-accent);
-}
-
 /* Form Card */
 .formCard {
-  max-width: 600px;
+  max-width: 700px;
   margin: 0 auto;
   width: 100%;
   padding: var(--space-8);
@@ -119,17 +58,31 @@
   }
 }
 
-/* Step */
-.step {
-  min-height: 300px;
+/* Section */
+.section {
+  margin-bottom: var(--space-8);
+  padding-bottom: var(--space-8);
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
-.stepTitle {
-  font-size: var(--font-size-xl);
+.section:last-of-type {
+  border-bottom: none;
+  margin-bottom: var(--space-6);
+  padding-bottom: 0;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--font-size-lg);
   font-weight: 600;
   color: var(--color-text-primary);
   margin: 0 0 var(--space-6);
-  text-align: center;
+}
+
+.sectionTitle svg {
+  color: var(--color-accent);
 }
 
 .optional {
@@ -205,6 +158,8 @@
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-sm);
   margin-bottom: var(--space-6);
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 .termsBox h3 {
@@ -253,37 +208,26 @@
   margin-left: 28px;
 }
 
-/* Navigation */
-.navigation {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: nowrap;
-  gap: var(--space-4);
+/* Submit Section */
+.submitSection {
+  text-align: center;
   margin-top: var(--space-8);
   padding-top: var(--space-6);
   border-top: 1px solid var(--color-border-subtle);
 }
 
-.navigation button {
+.submitSection button {
   display: inline-flex !important;
   flex-direction: row !important;
   align-items: center !important;
   justify-content: center !important;
   gap: var(--space-2) !important;
   white-space: nowrap !important;
-  flex-wrap: nowrap !important;
-  padding-left: var(--space-5) !important;
-  padding-right: var(--space-5) !important;
-  min-width: 120px;
+  min-width: 200px;
 }
 
-.navigation button > * {
+.submitSection button > * {
   flex-shrink: 0;
-}
-
-.navigation button:only-child {
-  margin-left: auto;
 }
 
 .submitError {
@@ -337,27 +281,6 @@
     padding: var(--space-4);
   }
 
-  .progress {
-    gap: var(--space-1);
-    overflow-x: auto;
-    justify-content: flex-start;
-    padding-bottom: var(--space-2);
-  }
-
-  .progressStep {
-    flex-shrink: 0;
-  }
-
-  .progressIcon {
-    width: 32px;
-    height: 32px;
-  }
-
-  .progressLabel {
-    font-size: 10px;
-    text-align: center;
-  }
-
   .formCard {
     padding: var(--space-4);
   }
@@ -370,17 +293,17 @@
     flex-direction: column;
   }
 
-  .navigation {
-    flex-direction: column-reverse;
-    gap: var(--space-3);
+  .section {
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-6);
   }
 
-  .navigation button {
+  .sectionTitle {
+    font-size: var(--font-size-base);
+    margin-bottom: var(--space-4);
+  }
+
+  .submitSection button {
     width: 100%;
-    justify-content: center;
-  }
-
-  .navigation button:only-child {
-    margin-left: 0;
   }
 }

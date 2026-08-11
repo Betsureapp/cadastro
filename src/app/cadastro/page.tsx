@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Mountain, User, MapPin, Award, Building2, CheckCircle, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Mountain, User, MapPin, Award, Building2, CheckCircle } from 'lucide-react';
 import { Button, Input, Select, Card } from '@/components/ui';
 import { getSupabase } from '@/lib/supabase';
 import { validateCPF, BRAZILIAN_STATES, formatPhone, formatCPF, formatCEP } from '@/lib/utils';
@@ -29,17 +29,8 @@ interface FormData {
   terms_accepted: boolean;
 }
 
-const STEPS = [
-  { id: 'personal', title: 'Dados Pessoais', icon: User },
-  { id: 'address', title: 'Endereço', icon: MapPin },
-  { id: 'abccmm', title: 'ABCCMM', icon: Award },
-  { id: 'haras', title: 'Haras', icon: Building2 },
-  { id: 'terms', title: 'Termos', icon: CheckCircle },
-];
-
 export default function CadastroPage() {
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<FormData>({
     full_name: '',
     birth_date: '',
@@ -64,13 +55,6 @@ export default function CadastroPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  useEffect(() => {
-    const storedRef = localStorage.getItem('referral_code');
-    if (storedRef) {
-      // Pode usar depois
-    }
-  }, []);
-
   const handleChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
@@ -85,47 +69,35 @@ export default function CadastroPage() {
     return value;
   };
 
-  const validateStep = (step: number): boolean => {
+  const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (step === 0) {
-      if (!formData.full_name.trim()) newErrors.full_name = 'Nome é obrigatório';
-      if (!formData.cpf.trim()) newErrors.cpf = 'CPF é obrigatório';
-      else if (!validateCPF(formData.cpf)) newErrors.cpf = 'CPF inválido';
-      if (!formData.birth_date) newErrors.birth_date = 'Data de nascimento é obrigatória';
-    }
+    // Dados pessoais
+    if (!formData.full_name.trim()) newErrors.full_name = 'Nome é obrigatório';
+    if (!formData.cpf.trim()) newErrors.cpf = 'CPF é obrigatório';
+    else if (!validateCPF(formData.cpf)) newErrors.cpf = 'CPF inválido';
+    if (!formData.birth_date) newErrors.birth_date = 'Data de nascimento é obrigatória';
 
-    if (step === 1) {
-      if (!formData.address.trim()) newErrors.address = 'Endereço é obrigatório';
-      if (!formData.neighborhood.trim()) newErrors.neighborhood = 'Bairro é obrigatório';
-      if (!formData.city.trim()) newErrors.city = 'Cidade é obrigatória';
-      if (!formData.state) newErrors.state = 'Estado é obrigatório';
-      if (!formData.zip_code.trim()) newErrors.zip_code = 'CEP é obrigatório';
-      if (!formData.phone.trim()) newErrors.phone = 'Telefone é obrigatório';
-      if (!formData.email.trim()) newErrors.email = 'E-mail é obrigatório';
-      else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'E-mail inválido';
-    }
+    // Endereço
+    if (!formData.address.trim()) newErrors.address = 'Endereço é obrigatório';
+    if (!formData.neighborhood.trim()) newErrors.neighborhood = 'Bairro é obrigatório';
+    if (!formData.city.trim()) newErrors.city = 'Cidade é obrigatória';
+    if (!formData.state) newErrors.state = 'Estado é obrigatório';
+    if (!formData.zip_code.trim()) newErrors.zip_code = 'CEP é obrigatório';
+    if (!formData.phone.trim()) newErrors.phone = 'Telefone é obrigatório';
+    if (!formData.email.trim()) newErrors.email = 'E-mail é obrigatório';
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'E-mail inválido';
 
-    if (step === 4) {
-      if (!formData.terms_accepted) newErrors.terms = 'Você precisa aceitar os termos';
-    }
+    // Termos
+    if (!formData.terms_accepted) newErrors.terms = 'Você precisa aceitar os termos';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const nextStep = () => {
-    if (validateStep(currentStep)) {
-      setCurrentStep(prev => Math.min(prev + 1, STEPS.length - 1));
-    }
-  };
-
-  const prevStep = () => {
-    setCurrentStep(prev => Math.max(prev - 1, 0));
-  };
-
-  const handleSubmit = async () => {
-    if (!validateStep(currentStep)) return;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateForm()) return;
 
     setIsLoading(true);
     setErrors({});
@@ -166,15 +138,11 @@ export default function CadastroPage() {
       }
 
       setIsSuccess(true);
-    } catch (err) {
+    } catch {
       setErrors({ submit: 'Erro ao enviar formulário' });
     }
 
     setIsLoading(false);
-  };
-
-  const handleFinalSubmit = () => {
-    handleSubmit();
   };
 
   if (isSuccess) {
@@ -210,32 +178,15 @@ export default function CadastroPage() {
         </p>
       </div>
 
-      {/* Progress */}
-      <div className={styles.progress}>
-        {STEPS.map((step, index) => {
-          const Icon = step.icon;
-          return (
-            <div
-              key={step.id}
-              className={`${styles.progressStep} ${
-                index === currentStep ? styles.active : ''
-              } ${index < currentStep ? styles.completed : ''}`}
-            >
-              <div className={styles.progressIcon}>
-                {index < currentStep ? <CheckCircle size={20} /> : <Icon size={20} />}
-              </div>
-              <span className={styles.progressLabel}>{step.title}</span>
-            </div>
-          );
-        })}
-      </div>
-
       {/* Form Card */}
       <Card className={styles.formCard}>
-        {/* Step 1: Dados Pessoais */}
-        {currentStep === 0 && (
-          <div className={styles.step}>
-            <h2 className={styles.stepTitle}>Dados Pessoais</h2>
+        <form onSubmit={handleSubmit}>
+          {/* Dados Pessoais */}
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>
+              <User size={20} />
+              Dados Pessoais
+            </h2>
 
             <div className={styles.formGroup}>
               <label className={styles.label}>Nome Completo *</label>
@@ -277,13 +228,14 @@ export default function CadastroPage() {
                 placeholder="Documento de identidade"
               />
             </div>
-          </div>
-        )}
+          </section>
 
-        {/* Step 2: Endereço */}
-        {currentStep === 1 && (
-          <div className={styles.step}>
-            <h2 className={styles.stepTitle}>Contato e Endereço</h2>
+          {/* Endereço */}
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>
+              <MapPin size={20} />
+              Endereço e Contato
+            </h2>
 
             <div className={styles.formGroup}>
               <label className={styles.label}>Endereço *</label>
@@ -364,13 +316,14 @@ export default function CadastroPage() {
                 />
               </div>
             </div>
-          </div>
-        )}
+          </section>
 
-        {/* Step 3: ABCCMM */}
-        {currentStep === 2 && (
-          <div className={styles.step}>
-            <h2 className={styles.stepTitle}>Dados ABCCMM</h2>
+          {/* ABCCMM */}
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>
+              <Award size={20} />
+              Dados ABCCMM
+            </h2>
 
             <div className={styles.formGroup}>
               <label className={styles.label}>Tipo de Membro *</label>
@@ -406,13 +359,14 @@ export default function CadastroPage() {
                 placeholder="Se já possui"
               />
             </div>
-          </div>
-        )}
+          </section>
 
-        {/* Step 4: Haras */}
-        {currentStep === 3 && (
-          <div className={styles.step}>
-            <h2 className={styles.stepTitle}>Dados do Haras <span className={styles.optional}>(opcional)</span></h2>
+          {/* Haras */}
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>
+              <Building2 size={20} />
+              Dados do Haras <span className={styles.optional}>(opcional)</span>
+            </h2>
 
             <div className={styles.formGroup}>
               <label className={styles.label}>Nome do Haras</label>
@@ -453,13 +407,14 @@ export default function CadastroPage() {
                 />
               </div>
             </div>
-          </div>
-        )}
+          </section>
 
-        {/* Step 5: Termos */}
-        {currentStep === 4 && (
-          <div className={styles.step}>
-            <h2 className={styles.stepTitle}>Termos e Condições</h2>
+          {/* Termos */}
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>
+              <CheckCircle size={20} />
+              Termos e Condições
+            </h2>
 
             <div className={styles.termsBox}>
               <h3>Termo de Adesão ao NCCMMGR</h3>
@@ -487,33 +442,19 @@ export default function CadastroPage() {
               <span>Li e aceito os termos e condições acima *</span>
             </label>
             {errors.terms && <p className={styles.errorText}>{errors.terms}</p>}
-          </div>
-        )}
+          </section>
 
-        {/* Navigation */}
-        <div className={styles.navigation}>
-          {currentStep > 0 && (
-            <Button variant="secondary" onClick={prevStep}>
-              <ChevronLeft size={18} />
-              Anterior
-            </Button>
-          )}
-
-          {currentStep < STEPS.length - 1 ? (
-            <Button onClick={nextStep}>
-              Próximo
-              <ChevronRight size={18} />
-            </Button>
-          ) : (
-            <Button onClick={handleFinalSubmit} isLoading={isLoading}>
+          {/* Submit */}
+          <div className={styles.submitSection}>
+            <Button type="submit" size="lg" isLoading={isLoading}>
               Finalizar Cadastro
             </Button>
-          )}
-        </div>
+          </div>
 
-        {errors.submit && (
-          <p className={styles.submitError}>{errors.submit}</p>
-        )}
+          {errors.submit && (
+            <p className={styles.submitError}>{errors.submit}</p>
+          )}
+        </form>
       </Card>
     </div>
   );
