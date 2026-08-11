@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🐴 NCCMMGR - Sistema de Gestão de Associados
 
-## Getting Started
+Sistema de cadastro e gestão de associados do **Núcleo dos Criadores de Cavalos Mangalarga Marchador de Guanambi e Região**.
 
-First, run the development server:
+## 📋 Funcionalidades
+
+- **Formulário Público de Cadastro**: Captura completa de dados de novos associados
+- **Sistema de Indicações**: Links personalizados com rastreamento de cliques e conversões
+- **Pipeline Kanban**: Visualização drag-and-drop do funil de aprovação
+- **Dashboard**: Métricas e estatísticas em tempo real
+- **Gestão de Associados**: Lista completa com filtros e busca
+- **Relatório de Indicações**: Ranking dos promotores e taxas de conversão
+
+## 🎨 Design
+
+- Design inspirado em **Kumo UI / Cloudflare**
+- Tema escuro com cores laranja (#f6821f)
+- Fonte: Inter
+- 100% responsivo
+
+## 🚀 Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Estilização**: CSS Modules + CSS Variables
+- **Estado**: Zustand
+- **Banco de Dados**: Supabase
+- **Drag & Drop**: @dnd-kit
+
+## 📦 Instalação
 
 ```bash
+# Instalar dependências
+npm install
+
+# Criar arquivo de ambiente
+cp .env.local.example .env.local
+# Edite o .env.local com suas credenciais do Supabase
+
+# Executar em modo desenvolvimento
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🔧 Configuração do Supabase
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Crie um projeto no [Supabase](https://supabase.com)
+2. Execute o SQL do arquivo `supabase-schema.sql` no SQL Editor
+3. Copie a URL e a chave anônima do projeto
+4. Cole no `.env.local`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Estrutura do Banco
 
-## Learn More
+- `associates` - Cadastros de associados/candidatos
+- `profiles` - Perfis de usuário (ligados ao auth)
+- `referral_codes` - Códigos de indicação
+- `status_history` - Histórico de mudanças de status
+- `referral_clicks` - Rastreamento de cliques
 
-To learn more about Next.js, take a look at the following resources:
+## 📁 Estrutura do Projeto
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+src/
+├── app/
+│   ├── page.tsx              # Login
+│   ├── cadastro/             # Formulário público
+│   └── admin/               # Painel administrativo
+│       ├── pipeline/        # Kanban
+│       ├── associados/       # Lista de associados
+│       ├── indicacoes/       # Relatório de indicações
+│       └── configuracoes/    # Configurações
+├── components/
+│   ├── ui/                  # Componentes base
+│   └── admin/               # Layout admin
+├── lib/
+│   ├── supabase.ts          # Cliente Supabase
+│   └── utils.ts             # Utilitários
+└── store/
+    └── index.ts             # Zustand stores
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🔐 Segurança
 
-## Deploy on Vercel
+- Row Level Security (RLS) em todas as tabelas
+- Administradores veem todos os dados
+- Usuários veem apenas seus próprios dados
+- Validação de CPF
+- Webhooks para automação
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📝 Licença
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
