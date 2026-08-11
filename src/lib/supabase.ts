@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 // Tipos
 export type ApplicationStatus =
@@ -64,8 +64,30 @@ export const statusLabels: Record<ApplicationStatus, string> = {
   rejeitado: 'Rejeitado',
 };
 
-// Cliente Supabase
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+// Lazy singleton - só cria o cliente quando necessário (no browser)
+let supabaseInstance: SupabaseClient | null = null;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export function getSupabase(): SupabaseClient {
+  if (typeof window === 'undefined') {
+    // SSR - retorna cliente temporário que vai ser substituído
+    if (!supabaseInstance) {
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+      supabaseInstance = createClient(supabaseUrl, supabaseAnonKey);
+    }
+    return supabaseInstance;
+  }
+
+  if (!supabaseInstance) {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey);
+  }
+
+  return supabaseInstance;
+}
+
+// Export default para compatibilidade
+export const supabase = typeof window !== 'undefined' ? getSupabase() : {
+  auth: { getUser: async () => ({ data: { user: null }, error: null }) }
+} as SupabaseClient;

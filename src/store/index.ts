@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { supabase, Profile, Associate, ApplicationStatus } from '@/lib/supabase';
+import { getSupabase, Profile, Associate, ApplicationStatus } from '@/lib/supabase';
 
 interface AuthState {
   user: Profile | null;
@@ -18,6 +18,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   login: async (email: string, password: string) => {
     try {
+      const supabase = getSupabase();
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -35,11 +36,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   logout: async () => {
+    const supabase = getSupabase();
     await supabase.auth.signOut();
     set({ user: null, isAuthenticated: false });
   },
 
   fetchProfile: async () => {
+    const supabase = getSupabase();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       set({ user: null, isAuthenticated: false, isLoading: false });
@@ -88,6 +91,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   fetchAssociates: async () => {
     set({ isLoadingAssociates: true });
+    const supabase = getSupabase();
 
     const { data, error } = await supabase
       .from('associates')
@@ -101,6 +105,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   fetchAssociateById: async (id: string) => {
+    const supabase = getSupabase();
     const { data } = await supabase
       .from('associates')
       .select('*')
@@ -115,6 +120,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   updateAssociateStatus: async (id: string, status: ApplicationStatus) => {
+    const supabase = getSupabase();
     const { error } = await supabase
       .from('associates')
       .update({ status })
