@@ -161,7 +161,7 @@ export default function PipelinePage() {
                   </div>
                   <div className={styles.row}>
                     <span className={styles.label}>Tipo:</span>
-                    <Badge variant={currentAssociate.member_type === 'criador' ? 'primary' : 'secondary'} size="sm">
+                    <Badge variant={currentAssociate.member_type === 'criador' ? 'accent' : 'default'} size="sm">
                       {currentAssociate.member_type === 'criador' ? 'Criador' : 'Usuário'}
                     </Badge>
                   </div>

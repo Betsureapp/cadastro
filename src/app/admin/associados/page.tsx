@@ -142,7 +142,7 @@ export default function AssociadosPage() {
                       </span>
                       <span className={styles.contactItem}>
                         <Phone size={14} />
-                        {formatPhone(associate.phone)}
+                        {formatPhone(associate.phone || '')}
                       </span>
                     </div>
                   </td>

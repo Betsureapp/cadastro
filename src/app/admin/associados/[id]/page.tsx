@@ -151,7 +151,7 @@ export default function AssociateDetailPage() {
                   <Phone size={16} />
                   <span className={styles.detailLabel}>Telefone</span>
                   <span className={styles.detailValue}>
-                    {formatPhone(selectedAssociate.phone)}
+                    {formatPhone(selectedAssociate.phone || '')}
                   </span>
                 </div>
               </div>
