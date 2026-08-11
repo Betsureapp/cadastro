@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Mountain, Mail, Lock, AlertCircle } from 'lucide-react';
 import { Button, Input } from '@/components/ui';
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
 import styles from './page.module.css';
 
 function LoginPageContent() {
@@ -20,6 +20,7 @@ function LoginPageContent() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        const supabase = getSupabase();
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           router.push('/admin');
@@ -48,6 +49,7 @@ function LoginPageContent() {
     setIsLoading(true);
 
     try {
+      const supabase = getSupabase();
       const { error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,

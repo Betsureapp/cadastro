@@ -67,27 +67,15 @@ export const statusLabels: Record<ApplicationStatus, string> = {
 // Lazy singleton - só cria o cliente quando necessário (no browser)
 let supabaseInstance: SupabaseClient | null = null;
 
-export function getSupabase(): SupabaseClient {
-  if (typeof window === 'undefined') {
-    // SSR - retorna cliente temporário que vai ser substituído
-    if (!supabaseInstance) {
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-      supabaseInstance = createClient(supabaseUrl, supabaseAnonKey);
-    }
-    return supabaseInstance;
-  }
-
-  if (!supabaseInstance) {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey);
-  }
-
-  return supabaseInstance;
+function createSupabaseClient(): SupabaseClient {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+  return createClient(supabaseUrl, supabaseAnonKey);
 }
 
-// Export default para compatibilidade
-export const supabase = typeof window !== 'undefined' ? getSupabase() : {
-  auth: { getUser: async () => ({ data: { user: null }, error: null }) }
-} as SupabaseClient;
+export function getSupabase(): SupabaseClient {
+  if (!supabaseInstance) {
+    supabaseInstance = createSupabaseClient();
+  }
+  return supabaseInstance;
+}

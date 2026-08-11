@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Mountain, User, MapPin, Award, Building2, CheckCircle, ChevronRight, ChevronLeft } from 'lucide-react';
 import { Button, Input, Select, Card } from '@/components/ui';
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
 import { validateCPF, BRAZILIAN_STATES, formatPhone, formatCPF, formatCEP } from '@/lib/utils';
 import styles from './page.module.css';
 
@@ -131,6 +131,7 @@ export default function CadastroPage() {
     setErrors({});
 
     try {
+      const supabase = getSupabase();
       const { error } = await supabase.from('associates').insert({
         full_name: formData.full_name,
         birth_date: formData.birth_date,
