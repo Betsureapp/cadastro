@@ -1,7 +1,7 @@
 .toast {
   background: var(--color-surface-elevated);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-sm);
   padding: var(--space-4);
   display: flex;
   align-items: flex-start;
