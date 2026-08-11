@@ -80,5 +80,15 @@ export function getSupabase(): SupabaseClient {
   return supabaseInstance;
 }
 
-// Export padrão para uso direto nos componentes (funciona em Client Components)
-export const supabase = getSupabase();
+// Proxy que adia a criação do cliente até o primeiro uso (resolve problema de SSR/build)
+export const supabase = new Proxy({} as SupabaseClient, {
+  get(_target, prop) {
+    const client = getSupabase();
+    const value = (client as any)[prop];
+    // Se for função, faz bind para preservar o contexto
+    if (typeof value === 'function') {
+      return value.bind(client);
+    }
+    return value;
+  }
+});
