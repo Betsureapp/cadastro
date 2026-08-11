@@ -4,86 +4,119 @@ Sistema de cadastro e gestão de associados do **Núcleo dos Criadores de Cavalo
 
 ## 📋 Funcionalidades
 
-- **Formulário Público de Cadastro**: Captura completa de dados de novos associados
-- **Sistema de Indicações**: Links personalizados com rastreamento de cliques e conversões
-- **Pipeline Kanban**: Visualização drag-and-drop do funil de aprovação
-- **Dashboard**: Métricas e estatísticas em tempo real
-- **Gestão de Associados**: Lista completa com filtros e busca
-- **Relatório de Indicações**: Ranking dos promotores e taxas de conversão
-
-## 🎨 Design
-
-- Design inspirado em **Kumo UI / Cloudflare**
-- Tema escuro com cores laranja (#f6821f)
-- Fonte: Inter
-- 100% responsivo
+- ✅ **Formulário Público de Cadastro** em etapas (Typeform-style)
+- ✅ **Cadastro aprovado automaticamente**
+- ✅ **Login admin** com Supabase Auth
+- ✅ **Dashboard** com estatísticas
+- ✅ **Pipeline em formato Carrossel** (Aprovados / Cancelados)
+- ✅ **Links de Indicação** personalizados por associado
+- ✅ **Máscaras** de CPF, Telefone, CEP
+- ✅ **100% responsivo** (mobile-first)
+- ✅ **Tema claro** com fonte Inter
 
 ## 🚀 Tech Stack
 
 - **Framework**: Next.js 16 (App Router)
 - **Estilização**: CSS Modules + CSS Variables
-- **Estado**: Zustand
-- **Banco de Dados**: Supabase
-- **Drag & Drop**: @dnd-kit
+- **Banco de Dados**: Supabase (PostgreSQL)
+- **Auth**: Supabase Auth
+- **Icons**: Lucide React
 
-## 📦 Instalação
+## 📦 Estrutura
+
+```
+src/
+├── app/
+│   ├── page.tsx                # Login admin
+│   ├── cadastro/               # Formulário público (etapas)
+│   └── admin/
+│       ├── page.tsx           # Dashboard
+│       ├── pipeline/          # Carrossel de associados
+│       ├── associados/         # Lista detalhada
+│       ├── indicacoes/         # Links de indicação
+│       └── configuracoes/      # Gerenciar admins
+├── components/
+│   ├── ui/                    # Componentes base (Button, Input, etc)
+│   └── admin/                 # Layout admin (Sidebar, Header)
+└── lib/
+    ├── supabase.ts            # Cliente Supabase
+    └── utils.ts               # Utilitários
+```
+
+---
+
+## 🟢 Deploy na Vercel
+
+### 1. Conectar ao GitHub
+
+1. Acesse [vercel.com](https://vercel.com)
+2. Faça login com GitHub
+3. Clique em **"Add New Project"**
+4. Selecione o repositório **Betsureapp/cadastro**
+5. Clique em **"Import"**
+
+### 2. Configurar Variáveis de Ambiente
+
+Na tela de configuração da Vercel, adicione:
+
+| Nome | Valor |
+|------|-------|
+| `NEXT_PUBLIC_SUPABASE_URL` | `https://fkpgvodxnbqrmtcxeijw.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrcGd2b2R4bmJxcm10Y3hlaWp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0MjQyMjcsImV4cCI6MjEwMjAwMDIyN30.tx4Ry36kRl08huXgBdPnb5oOWQLyh4seRUiffU3rb_E` |
+
+### 3. Deploy
+
+1. Clique em **"Deploy"**
+2. Aguarde ~2 minutos
+3. Pronto! 🎉
+
+### 4. Domínio
+
+A Vercel gera um domínio `https://cadastro.vercel.app`. Você pode configurar domínio personalizado depois.
+
+---
+
+## 🔧 Configuração Inicial do Supabase
+
+Execute os arquivos SQL no **Supabase Dashboard > SQL Editor**:
+
+1. **`supabase-schema.sql`** - Schema completo (tabelas, policies, triggers)
+2. **`supabase-setup.sql`** - Tabelas básicas
+3. **`supabase-fix.sql`** - Ajustes de status default
+
+### Criar Admin
+
+1. Acesse **Authentication** → **Users** → **Add User**
+2. Cadastre e-mail e senha
+3. Anote o **UUID**
+4. Execute:
+```sql
+INSERT INTO public.profiles (id, role, full_name)
+VALUES ('SEU-UUID-AQUI', 'admin', 'Administrador');
+```
+
+---
+
+## 🛠️ Desenvolvimento Local
 
 ```bash
 # Instalar dependências
 npm install
 
-# Criar arquivo de ambiente
+# Variáveis de ambiente
 cp .env.local.example .env.local
-# Edite o .env.local com suas credenciais do Supabase
 
-# Executar em modo desenvolvimento
+# Editar .env.local com suas credenciais
+
+# Rodar dev server
 npm run dev
 ```
 
-## 🔧 Configuração do Supabase
+Acesse:
+- `http://localhost:3000` → Login admin
+- `http://localhost:3000/cadastro` → Formulário público
 
-1. Crie um projeto no [Supabase](https://supabase.com)
-2. Execute o SQL do arquivo `supabase-schema.sql` no SQL Editor
-3. Copie a URL e a chave anônima do projeto
-4. Cole no `.env.local`
-
-### Estrutura do Banco
-
-- `associates` - Cadastros de associados/candidatos
-- `profiles` - Perfis de usuário (ligados ao auth)
-- `referral_codes` - Códigos de indicação
-- `status_history` - Histórico de mudanças de status
-- `referral_clicks` - Rastreamento de cliques
-
-## 📁 Estrutura do Projeto
-
-```
-src/
-├── app/
-│   ├── page.tsx              # Login
-│   ├── cadastro/             # Formulário público
-│   └── admin/               # Painel administrativo
-│       ├── pipeline/        # Kanban
-│       ├── associados/       # Lista de associados
-│       ├── indicacoes/       # Relatório de indicações
-│       └── configuracoes/    # Configurações
-├── components/
-│   ├── ui/                  # Componentes base
-│   └── admin/               # Layout admin
-├── lib/
-│   ├── supabase.ts          # Cliente Supabase
-│   └── utils.ts             # Utilitários
-└── store/
-    └── index.ts             # Zustand stores
-```
-
-## 🔐 Segurança
-
-- Row Level Security (RLS) em todas as tabelas
-- Administradores veem todos os dados
-- Usuários veem apenas seus próprios dados
-- Validação de CPF
-- Webhooks para automação
+---
 
 ## 📝 Licença
 
