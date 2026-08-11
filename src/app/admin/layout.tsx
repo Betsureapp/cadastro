@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { Sidebar, AdminHeader } from '@/components/admin';
-import { supabase } from '@/lib/supabase';
+import { getCurrentUser } from '@/lib/auth';
 import styles from './layout.module.css';
 
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
@@ -14,7 +14,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const user = await getCurrentUser();
         if (user) {
           setIsAuthenticated(true);
         } else {

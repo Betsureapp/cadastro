@@ -17,7 +17,7 @@ import {
   Mountain
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { supabase } from '@/lib/supabase';
+import { logout, getCurrentUser } from '@/lib/auth';
 import { Button } from '@/components/ui';
 import styles from './Sidebar.module.css';
 
@@ -36,17 +36,25 @@ export function Sidebar() {
 
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user?.email) {
-        setUserName(user.email.split('@')[0]);
+      try {
+        const user = await getCurrentUser();
+        if (user?.email) {
+          setUserName(user.email.split('@')[0]);
+        }
+      } catch {
+        // Ignore errors during SSR
       }
     };
     getUser();
   }, []);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.href = '/';
+    try {
+      await logout();
+    } catch {
+      // Redirect anyway
+      window.location.href = '/';
+    }
   };
 
   return (
