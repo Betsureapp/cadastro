@@ -79,3 +79,6 @@ export function getSupabase(): SupabaseClient {
   }
   return supabaseInstance;
 }
+
+// Export padrão para uso direto nos componentes (funciona em Client Components)
+export const supabase = getSupabase();
